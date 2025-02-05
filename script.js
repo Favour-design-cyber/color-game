@@ -14,22 +14,36 @@ function randomColor() {
     return `rgb(${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)})`;
 }
 
+
+function similarColor(baseColor) {
+    const [r, g, b] = baseColor.match(/\d+/g).map(Number);
+    return `rgb(${Math.min(r + Math.floor(Math.random() * 50 - 25), 255)}, ${Math.min(g + Math.floor(Math.random() * 50 - 25), 255)}, ${Math.min(b + Math.floor(Math.random() * 50 - 25), 255)})`;
+}
+
+
 function startGame() {
+    score = 0;
+    scoreDisplay.textContent = score;
+    resetGame();
+}
+
+function resetGame() {
     gameStatus.textContent = "";
     gameInstructions.textContent = "Guess the correct color!";
 
-    let colors = [];
-    for (let i = 0; i < 6; i++) {
-        colors.push(randomColor());
-    }
-    
 
-        
+    const baseColor = randomColor();
+    let colors = [baseColor];
+    for (let i = 1; i < 6; i++) {
+        colors.push(similarColor(baseColor));
+    }
+
+
+    colors = colors.sort(() => Math.random() - 0.5);
 
     targetColor = colors[Math.floor(Math.random() * 6)];
     colorBox.style.backgroundColor = targetColor;
-    
- 
+
     colorOptions.innerHTML = "";
     colors.forEach(color => {
         let button = document.createElement("button");
@@ -41,18 +55,19 @@ function startGame() {
     });
 }
 
+
 function checkGuess(selectedColor) {
     if (selectedColor === targetColor) {
         gameStatus.textContent = "Correct! 🎉";
         score++;
         scoreDisplay.textContent = score;
-        setTimeout(startGame, 1000);
+        setTimeout(resetGame, 1000);
     } else {
         gameStatus.textContent = "Wrong! Try again.";
     }
 }
 
-newGameButton.addEventListener("click", startGame);
 
+newGameButton.addEventListener("click", startGame);
 
 startGame();
